@@ -62,6 +62,14 @@ export default function PersonalizePage() {
     return () => window.removeEventListener('keydown', handler);
   }, [showWelcome, handleSkipWelcome]);
 
+  // Scroll lock when welcome overlay is shown
+  useEffect(() => {
+    if (showWelcome) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [showWelcome]);
+
   const handleContinue = async () => {
     const trimmedName = name.trim();
     if (!trimmedName || isLoading) return;
@@ -98,7 +106,7 @@ export default function PersonalizePage() {
         {/* Back Button */}
         <button
           onClick={handleBack}
-          className="absolute top-6 left-6 p-2 text-text-muted hover:text-text-primary transition-colors"
+          className="fixed top-6 left-6 p-2 text-text-muted hover:text-text-primary transition-colors z-20 safe-top"
           aria-label="Go back"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

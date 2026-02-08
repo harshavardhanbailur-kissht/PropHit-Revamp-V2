@@ -61,15 +61,15 @@ export default function DashboardPage() {
 
       {/* Stats Overview */}
       <section className="grid grid-cols-3 gap-3 mb-8">
-        <div className="card-container">
+        <div className="card-container p-3 sm:p-4">
           <p className="text-text-muted text-caption mb-1">Listings</p>
           <p className="text-2xl font-semibold text-white">{properties.length}</p>
         </div>
-        <div className="card-container">
+        <div className="card-container p-3 sm:p-4">
           <p className="text-text-muted text-caption mb-1">Govt-Backed</p>
           <p className="text-2xl font-semibold text-gold">{govtCount}</p>
         </div>
-        <div className="card-container">
+        <div className="card-container p-3 sm:p-4">
           <p className="text-text-muted text-caption mb-1">Low Risk</p>
           <p className="text-2xl font-semibold text-success">{lowRiskCount}</p>
         </div>

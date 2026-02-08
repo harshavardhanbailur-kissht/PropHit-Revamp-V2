@@ -89,6 +89,22 @@ export default function PhonePage() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showWhyVerify, showSocialProof, handleSocialProofComplete]);
 
+  // Scroll lock when social proof modal is open
+  useEffect(() => {
+    if (showSocialProof) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [showSocialProof]);
+
+  // Scroll lock when why-verify modal is open
+  useEffect(() => {
+    if (showWhyVerify) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [showWhyVerify]);
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 10);
     setPhoneLocal(value);
@@ -227,7 +243,7 @@ export default function PhonePage() {
             <span className="text-text-muted text-caption">&middot;</span>
             <button
               onClick={() => setShowWhyVerify(true)}
-              className="text-gold text-caption hover:underline underline-offset-2 transition-colors"
+              className="text-gold text-caption hover:underline underline-offset-2 transition-colors py-1 px-1"
               aria-haspopup="dialog"
             >
               Why verify?
@@ -259,7 +275,7 @@ export default function PhonePage() {
                 value={inviteCode}
                 onChange={e => setInviteCode(e.target.value.toUpperCase().slice(0, 12))}
                 placeholder="Enter invite code"
-                className="input-premium text-sm py-3"
+                className="input-premium py-3"
                 maxLength={12}
               />
               {inviteStatus === 'valid' && (
@@ -300,7 +316,7 @@ export default function PhonePage() {
                 value={referralCode}
                 onChange={e => setReferralCode(e.target.value.slice(0, 20))}
                 placeholder="Friend's name or referral code"
-                className="input-premium text-sm py-3"
+                className="input-premium py-3"
                 maxLength={20}
               />
               {referralVerified && (
