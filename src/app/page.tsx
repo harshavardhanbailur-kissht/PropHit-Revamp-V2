@@ -1,101 +1,461 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { Logo } from '@/components/Logo';
+import { useFlow } from '@/context/FlowContext';
+import { PHONE_REGEX } from '@/lib/constants';
+import { SocialProofModal } from '@/components/SocialProofModal';
+
+// Geo-personalization: deterministic city from phone digits
+const CITIES = ['Mumbai', 'Bangalore', 'Delhi NCR', 'Hyderabad', 'Pune', 'Chennai', 'Gurugram', 'Kochi'];
+
+function getCityFromPhone(phone: string): string | null {
+  if (phone.length < 4) return null;
+  const sum = phone.split('').reduce((acc, d) => acc + parseInt(d || '0', 10), 0);
+  return CITIES[sum % CITIES.length];
+}
+
+// Seasonal content based on current month
+function getSeasonalContent() {
+  const month = new Date().getMonth();
+  if (month >= 11 || month <= 1) return { label: 'Winter Collection', text: 'Ultra-Luxury Hill Station Retreats' };
+  if (month >= 2 && month <= 4) return { label: 'Spring Preview', text: 'Coastal Villas & Beachfront Properties' };
+  if (month >= 5 && month <= 7) return { label: 'Monsoon Special', text: 'Pre-Launch Prices on Premium Towers' };
+  return { label: 'Festive Edition', text: 'Heritage & Ultra-Luxury Properties' };
+}
+
+export default function PhonePage() {
+  const router = useRouter();
+  const { state, setPhone } = useFlow();
+  const [phone, setPhoneLocal] = useState(state.phone);
+  const [isValid, setIsValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Enhanced feature state
+  const [showSocialProof, setShowSocialProof] = useState(false);
+  const [showInviteInput, setShowInviteInput] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [inviteStatus, setInviteStatus] = useState<'idle' | 'valid' | 'invalid'>('idle');
+  const [showReferral, setShowReferral] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralVerified, setReferralVerified] = useState(false);
+  const [showWhyVerify, setShowWhyVerify] = useState(false);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+
+  const seasonal = getSeasonalContent();
+  const detectedCity = getCityFromPhone(phone);
+
+  // Check returning user on mount
+  useEffect(() => {
+    const visited = localStorage.getItem('prophit-user-visited');
+    if (visited) setIsReturningUser(true);
+  }, []);
+
+  // Validate phone on change
+  useEffect(() => {
+    setIsValid(PHONE_REGEX.test(phone));
+  }, [phone]);
+
+  // Validate invite code (prototype: 6+ chars = valid)
+  useEffect(() => {
+    if (inviteCode.length === 0) setInviteStatus('idle');
+    else if (inviteCode.length >= 6) setInviteStatus('valid');
+    else setInviteStatus('invalid');
+  }, [inviteCode]);
+
+  // Validate referral (prototype: 3+ chars = verified)
+  useEffect(() => {
+    setReferralVerified(referralCode.length >= 3);
+  }, [referralCode]);
+
+  // Escape key handler for modals
+  const handleSocialProofComplete = useCallback(() => {
+    setShowSocialProof(false);
+    router.push('/verify');
+  }, [router]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showWhyVerify) setShowWhyVerify(false);
+        if (showSocialProof) handleSocialProofComplete();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [showWhyVerify, showSocialProof, handleSocialProofComplete]);
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setPhoneLocal(value);
+  };
+
+  const handleContinue = async () => {
+    if (!isValid || isLoading) return;
+
+    setIsLoading(true);
+    setPhone(phone);
+
+    // Mark as visited for tiered onboarding
+    localStorage.setItem('prophit-user-visited', 'true');
+
+    // Brief loading, then show social proof modal
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setShowSocialProof(true);
+    // isLoading stays true so button remains disabled
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isValid && !isLoading) {
+      handleContinue();
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 safe-top safe-bottom relative overflow-hidden">
+      {/* Hero Video Background */}
+      <div className="hero-video-container">
+        <video
+          ref={videoRef}
+          className={`hero-video ${isVideoLoaded ? 'hero-video-loaded' : ''}`}
+          muted
+          loop
+          playsInline
+          preload="none"
+          onLoadedData={() => setIsVideoLoaded(true)}
+        >
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-video-overlay" />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <button
+          onClick={() => {
+            if (videoRef.current) {
+              if (isVideoPlaying) {
+                videoRef.current.pause();
+              } else {
+                videoRef.current.play();
+              }
+              setIsVideoPlaying(!isVideoPlaying);
+            }
+          }}
+          className="hero-video-toggle"
+          aria-label={isVideoPlaying ? 'Pause background video' : 'Play background video'}
+        >
+          {isVideoPlaying ? (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Content Container */}
+      <div className="w-full max-w-sm flex flex-col items-center page-transition relative z-10">
+        {/* Seasonal Badge */}
+        <div className="seasonal-badge" aria-label={`${seasonal.label}: ${seasonal.text}`}>
+          <span className="seasonal-badge-label">{seasonal.label}</span>
+          <span className="seasonal-badge-divider" />
+          <span className="seasonal-badge-text">{seasonal.text}</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* Logo */}
+        <Logo className="w-48 h-12 mb-12" variant="dark" />
+
+        {/* Tiered Heading */}
+        <h1 className="text-hero text-center text-white mb-2 heading-luxury">
+          {isReturningUser ? 'Welcome Back, Elite Member' : 'Join the Exclusive Circle'}
+        </h1>
+
+        {/* Geo-personalized Subheading */}
+        <p className="text-text-secondary text-center mb-10" aria-live="polite">
+          {detectedCity
+            ? <>Discover Prime <span className="text-gold font-medium">{detectedCity}</span> Properties</>
+            : 'Enter your mobile number to begin'
+          }
+        </p>
+
+        {/* Phone Input */}
+        <div className="w-full mb-4">
+          <div className="relative">
+            {/* Lock Icon + Country Code */}
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-text-secondary whitespace-nowrap">
+              <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="text-lg">{'\u{1F1EE}\u{1F1F3}'}</span>
+              <span className="font-medium">+91</span>
+              <div className="w-px h-6 bg-border-subtle ml-1" />
+            </div>
+
+            {/* Input */}
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={handlePhoneChange}
+              onKeyDown={handleKeyDown}
+              placeholder="9876543210"
+              autoFocus
+              className={`input-premium pl-28 sm:pl-32 ${isValid ? 'valid' : ''}`}
+              aria-label="Mobile number"
+            />
+
+            {/* Valid Indicator */}
+            {isValid && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <svg className="w-5 h-5 text-success success-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            )}
+          </div>
+
+          {/* Helper Text + Why Verify Link */}
+          <div className="flex items-center justify-center gap-1.5 mt-3">
+            <p className="text-text-muted text-caption text-center">
+              Encrypted &amp; never shared
+            </p>
+            <span className="text-text-muted text-caption">&middot;</span>
+            <button
+              onClick={() => setShowWhyVerify(true)}
+              className="text-gold text-caption hover:underline underline-offset-2 transition-colors"
+              aria-haspopup="dialog"
+            >
+              Why verify?
+            </button>
+          </div>
+        </div>
+
+        {/* Invite Code Section */}
+        <div className="w-full mb-2">
+          <button
+            onClick={() => setShowInviteInput(!showInviteInput)}
+            className="invite-toggle"
+            aria-expanded={showInviteInput}
+          >
+            <svg className="w-3.5 h-3.5 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <span>Have an Invite Code?</span>
+            {!showInviteInput && <span className="invite-toggle-badge">Limited Spots</span>}
+            <svg className={`w-3.5 h-3.5 text-text-muted transition-transform flex-shrink-0 ${showInviteInput ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showInviteInput && (
+            <div className="invite-input-container" aria-live="polite">
+              <input
+                type="text"
+                value={inviteCode}
+                onChange={e => setInviteCode(e.target.value.toUpperCase().slice(0, 12))}
+                placeholder="Enter invite code"
+                className="input-premium text-sm py-3"
+                maxLength={12}
+              />
+              {inviteStatus === 'valid' && (
+                <p className="text-success text-xs mt-2 flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Priority Access Unlocked
+                </p>
+              )}
+              {inviteStatus === 'invalid' && inviteCode.length > 0 && (
+                <p className="text-text-muted text-xs mt-2">Enter a valid 6+ character code</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Referral Section */}
+        <div className="w-full mb-6">
+          <button
+            onClick={() => setShowReferral(!showReferral)}
+            className="invite-toggle"
+            aria-expanded={showReferral}
+          >
+            <svg className="w-3.5 h-3.5 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Invited by a Friend?</span>
+            <svg className={`w-3.5 h-3.5 text-text-muted transition-transform flex-shrink-0 ml-auto ${showReferral ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showReferral && (
+            <div className="invite-input-container" aria-live="polite">
+              <input
+                type="text"
+                value={referralCode}
+                onChange={e => setReferralCode(e.target.value.slice(0, 20))}
+                placeholder="Friend's name or referral code"
+                className="input-premium text-sm py-3"
+                maxLength={20}
+              />
+              {referralVerified && (
+                <p className="text-success text-xs mt-2 flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Early Access to New Listings Unlocked
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Continue Button */}
+        <button
+          onClick={handleContinue}
+          disabled={!isValid || isLoading}
+          className="btn-primary"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Verifying...
+            </span>
+          ) : (
+            'Continue'
+          )}
+        </button>
+
+        {/* VIP Preview Opt-in (new users only) */}
+        {!isReturningUser && (
+          <p className="text-text-muted text-caption mt-4 text-center">
+            <span className="text-gold font-medium">VIP Preview:</span> Curated property alerts post-login
+          </p>
+        )}
+
+        {/* Tagline */}
+        <p className="text-text-muted text-caption mt-6 text-center max-w-xs">
+          Your Exclusive Portal to Premium Real Estate Investments
+        </p>
+
+        {/* Social Proof */}
+        <p className="text-text-secondary text-caption mt-4 text-center animate-fade-in">
+          Join <span className="text-gold font-semibold">1,000+</span> Elite Investors
+        </p>
+
+        {/* Trust Indicators */}
+        <div className="gold-line w-24 mt-6" />
+
+        {/* Trust Badges */}
+        <div className="trust-badges mt-6">
+          <div className="flex items-center justify-center gap-5 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="text-text-muted text-xs tracking-wide uppercase">SEBI Registered</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="text-text-muted text-xs tracking-wide uppercase">Bank-Grade Encryption</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="text-text-muted text-xs tracking-wide uppercase">Institutional Partners</span>
+            </div>
+          </div>
+
+          <p className="text-text-muted text-xs text-center mt-4 italic">
+            &ldquo;Transformed my portfolio in just 6 months&rdquo;
+            <span className="text-text-secondary not-italic"> &mdash; Rajesh M., Mumbai</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Social Proof Modal */}
+      {showSocialProof && (
+        <SocialProofModal
+          onComplete={handleSocialProofComplete}
+          isReturning={isReturningUser}
+        />
+      )}
+
+      {/* Why Phone Verification Modal */}
+      {showWhyVerify && (
+        <>
+          <div className="why-verify-backdrop" onClick={() => setShowWhyVerify(false)} />
+          <div className="why-verify-modal" role="dialog" aria-modal="true" aria-label="Why phone verification">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-white">Why Phone Verification?</h3>
+              <button
+                onClick={() => setShowWhyVerify(false)}
+                className="text-text-muted hover:text-white transition-colors p-1"
+                aria-label="Close"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <svg className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <div>
+                  <p className="text-xs text-white font-medium">256-Bit Encryption</p>
+                  <p className="text-xs text-text-muted">Your OTP is transmitted with bank-grade encryption</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <div>
+                  <p className="text-xs text-white font-medium">SEBI-Compliant KYC</p>
+                  <p className="text-xs text-text-muted">Phone verification is part of regulatory compliance</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+                <div>
+                  <p className="text-xs text-white font-medium">Zero Data Sharing</p>
+                  <p className="text-xs text-text-muted">Your number is never shared with third parties</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="text-xs text-white font-medium">Verified Access Only</p>
+                  <p className="text-xs text-text-muted">Ensures only legitimate investors access the platform</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
