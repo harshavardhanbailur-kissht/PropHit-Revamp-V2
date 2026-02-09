@@ -102,8 +102,8 @@ export default function VerifyPage() {
           />
         </div>
 
-        {/* Resend */}
-        <div className="text-center">
+        {/* Resend with Countdown Ring */}
+        <div className="text-center flex flex-col items-center">
           {canResend ? (
             <button
               onClick={handleResend}
@@ -112,9 +112,21 @@ export default function VerifyPage() {
               Resend code
             </button>
           ) : (
-            <p className="text-text-muted text-sm">
-              Resend code in <span className="text-text-secondary font-medium">{countdown}s</span>
-            </p>
+            <div className="flex items-center gap-3">
+              <svg width="36" height="36" viewBox="0 0 36 36" className="countdown-ring">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border-subtle)" strokeWidth="2" />
+                <circle
+                  cx="18" cy="18" r="15" fill="none" stroke="var(--gold)" strokeWidth="2"
+                  strokeDasharray={15 * 2 * Math.PI}
+                  strokeDashoffset={15 * 2 * Math.PI * (1 - (30 - countdown) / 30)}
+                  strokeLinecap="round"
+                  className="countdown-ring-progress"
+                />
+              </svg>
+              <p className="text-text-muted text-sm">
+                Resend in <span className="text-text-secondary font-medium">{countdown}s</span>
+              </p>
+            </div>
           )}
         </div>
 

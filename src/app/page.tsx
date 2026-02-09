@@ -114,10 +114,19 @@ export default function PhonePage() {
     }
   };
 
+  // Kinetic text helper
+  const headingText = isReturningUser
+    ? 'Welcome Back, Elite Member'
+    : 'Your Exclusive Gateway to Premium Real Estate Deals';
+  const headingWords = headingText.split(' ');
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 safe-top safe-bottom relative overflow-hidden">
       {/* Winter Collection: Immersive Background (Aurora + Snow + Mountains) */}
       {seasonal.isWinter && <WinterHero />}
+
+      {/* Login Aurora Gradient */}
+      <div className="login-aurora" aria-hidden="true" />
 
       {/* Hero Video Background */}
       <div className="hero-video-container">
@@ -160,8 +169,9 @@ export default function PhonePage() {
         </button>
       </div>
 
-      {/* Content Container */}
-      <div className="w-full max-w-sm flex flex-col items-center page-transition relative z-10">
+      {/* Content Container with 3D Perspective */}
+      <div className="login-form-container w-full max-w-sm relative z-10">
+        <div className="login-form-inner flex flex-col items-center page-transition">
         {/* Seasonal Badge */}
         <div className="seasonal-badge" aria-label={`${seasonal.label}: ${seasonal.text}`}>
           <span className="seasonal-badge-label">{seasonal.label}</span>
@@ -172,13 +182,21 @@ export default function PhonePage() {
         {/* Logo */}
         <Logo className="w-48 h-12 mb-12" variant="dark" />
 
-        {/* Tiered Heading */}
-        <h1 className="text-hero text-center text-white mb-2 heading-luxury">
-          {isReturningUser ? 'Welcome Back, Elite Member' : 'Your Exclusive Gateway to Premium Real Estate Deals'}
+        {/* Kinetic Typography Heading */}
+        <h1 className="text-hero text-center text-white mb-2 heading-luxury" style={{ perspective: '600px' }}>
+          {headingWords.map((word, i) => (
+            <span
+              key={i}
+              className="kinetic-word"
+              style={{ animationDelay: `${0.1 + i * 0.08}s` }}
+            >
+              {word}{i < headingWords.length - 1 ? '\u00A0' : ''}
+            </span>
+          ))}
         </h1>
 
         {/* Geo-personalized Subheading */}
-        <p className="text-text-secondary text-center mb-10" aria-live="polite">
+        <p className="text-text-secondary text-center mb-10" aria-live="polite" style={{ opacity: 0, animation: 'fadeInUp 0.5s ease-out 0.8s forwards' }}>
           {detectedCity
             ? <>Discover Prime <span className="text-gold font-medium">{detectedCity}</span> Properties</>
             : 'Enter your mobile number to begin'
@@ -276,17 +294,17 @@ export default function PhonePage() {
         {/* Trust Indicators */}
         <div className="gold-line w-24 mt-6" />
 
-        {/* Trust Badges */}
+        {/* Trust Badges — Staggered Entrance */}
         <div className="trust-badges mt-6">
           <div className="flex items-center justify-center gap-5 flex-wrap">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 trust-badge-item">
               <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               <span className="text-text-muted text-xs tracking-wide uppercase">Bank-Grade Encryption</span>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 trust-badge-item">
               <svg className="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
@@ -294,12 +312,13 @@ export default function PhonePage() {
             </div>
           </div>
 
-          <p className="text-text-muted text-xs text-center mt-4 italic">
+          <p className="text-text-muted text-xs text-center mt-4 italic trust-badge-item">
             &ldquo;Transformed my portfolio in just 6 months&rdquo;
             <span className="text-text-secondary not-italic"> &mdash; Rajesh M., Mumbai</span>
           </p>
         </div>
-      </div>
+        </div>{/* close login-form-inner */}
+      </div>{/* close login-form-container */}
 
       {/* Social Proof Modal */}
       {showSocialProof && (

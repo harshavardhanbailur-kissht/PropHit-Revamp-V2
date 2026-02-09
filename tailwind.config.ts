@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Backgrounds
-        'bg-primary': '#0a0a0a',
-        'bg-secondary': '#0f0f0f',
-        'bg-card': '#141414',
-        'bg-elevated': '#1a1a1a',
+        // Backgrounds — Midnight Sapphire
+        'bg-primary': '#080f1e',
+        'bg-secondary': '#0c1628',
+        'bg-card': '#101e36',
+        'bg-elevated': '#162744',
 
         // Brand Gold (from logo)
         'gold': '#C9A962',
@@ -23,7 +23,7 @@ const config: Config = {
         // Text
         'text-primary': '#ffffff',
         'text-secondary': '#b3b3b3',
-        'text-muted': '#666666',
+        'text-muted': '#667a94',
 
         // Semantic
         'success': '#22c55e',

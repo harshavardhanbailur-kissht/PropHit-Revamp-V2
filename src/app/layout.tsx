@@ -28,7 +28,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#0a0a0a',
+  themeColor: '#080f1e',
 };
 
 export const metadata: Metadata = {
@@ -49,6 +49,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body className="antialiased font-sans">
+        {/* Ambient Sapphire-Gold Aurora */}
+        <div className="aurora-ambient" aria-hidden="true" />
+
         {/* Architectural Grid Background */}
         <div className="grid-background" aria-hidden="true" />
 

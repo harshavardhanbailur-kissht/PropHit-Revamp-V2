@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 interface SocialProofModalProps {
   onComplete: () => void;
@@ -36,47 +36,61 @@ export function SocialProofModal({ onComplete, isReturning }: SocialProofModalPr
   const [shuffleKey, setShuffleKey] = useState(0);
 
   const duration = isReturning ? 8000 : 10000;
+  const phaseRef = useRef<Phase>(0);
 
   const stableComplete = useCallback(() => {
     onComplete();
   }, [onComplete]);
 
-  // Phase timeline
+  // Unified requestAnimationFrame loop — keeps progress bar and phase transitions in sync
   useEffect(() => {
+    const startTime = performance.now();
+    let rafId: number;
     const scale = duration / 10000;
 
-    const t1 = setTimeout(() => {
-      setPhase(1);
-      setVisibleStats(ALL_STATS.slice(0, 2));
-    }, 500 * scale);
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const pct = Math.min((elapsed / duration) * 100, 100);
+      setProgress(pct);
 
-    const t2 = setTimeout(() => {
-      setPhase(2);
-      setShuffleKey(prev => prev + 1);
-      setVisibleStats(ALL_STATS.slice(0, 4));
-    }, 2500 * scale);
+      // Phase transitions derived from same elapsed time — no drift
+      if (elapsed >= 500 * scale && phaseRef.current < 1) {
+        phaseRef.current = 1;
+        setPhase(1);
+        setVisibleStats(ALL_STATS.slice(0, 2));
+      }
+      if (elapsed >= 2500 * scale && phaseRef.current < 2) {
+        phaseRef.current = 2;
+        setPhase(2);
+        setShuffleKey(prev => prev + 1);
+        setVisibleStats(ALL_STATS.slice(0, 4));
+      }
+      if (elapsed >= 4500 * scale && phaseRef.current < 3) {
+        phaseRef.current = 3;
+        setPhase(3);
+        setShuffleKey(prev => prev + 1);
+        setVisibleStats([ALL_STATS[4], ALL_STATS[5], ALL_STATS[6], ALL_STATS[7]]);
+      }
+      if (elapsed >= 6500 * scale && phaseRef.current < 4) {
+        phaseRef.current = 4;
+        setPhase(4);
+        setShuffleKey(prev => prev + 1);
+        setVisibleStats(ALL_STATS.slice(0, 4));
+      }
+      if (elapsed >= 8500 * scale && phaseRef.current < 5) {
+        phaseRef.current = 5;
+        setPhase(5);
+      }
 
-    const t3 = setTimeout(() => {
-      setPhase(3);
-      setShuffleKey(prev => prev + 1);
-      setVisibleStats([ALL_STATS[4], ALL_STATS[5], ALL_STATS[6], ALL_STATS[7]]);
-    }, 4500 * scale);
-
-    const t4 = setTimeout(() => {
-      setPhase(4);
-      setShuffleKey(prev => prev + 1);
-      setVisibleStats(ALL_STATS.slice(0, 4));
-    }, 6500 * scale);
-
-    const t5 = setTimeout(() => {
-      setPhase(5);
-    }, 8500 * scale);
-
-    const dismissTimer = setTimeout(stableComplete, duration);
-
-    return () => {
-      [t1, t2, t3, t4, t5, dismissTimer].forEach(clearTimeout);
+      if (elapsed < duration) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        stableComplete();
+      }
     };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [duration, stableComplete]);
 
   // Footer message rotation
@@ -87,22 +101,6 @@ export function SocialProofModal({ onComplete, isReturning }: SocialProofModalPr
     }, 1800);
     return () => clearInterval(interval);
   }, [phase]);
-
-  // Progress bar
-  useEffect(() => {
-    const interval = 30;
-    const step = (interval / duration) * 100;
-    const progressTimer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressTimer);
-          return 100;
-        }
-        return prev + step;
-      });
-    }, interval);
-    return () => clearInterval(progressTimer);
-  }, [duration]);
 
   const getCardClass = (index: number): string => {
     switch (phase) {
@@ -164,7 +162,7 @@ export function SocialProofModal({ onComplete, isReturning }: SocialProofModalPr
           ))}
         </div>
 
-        {/* Progress Bar */}
+        {/* Progress Bar with Glow Dot */}
         <div className="social-proof-progress-track">
           <div
             className="social-proof-progress-fill"
@@ -176,7 +174,7 @@ export function SocialProofModal({ onComplete, isReturning }: SocialProofModalPr
         <p className="social-proof-footer sp-footer-rotate" key={footerMsgIndex}>
           {phase === 5 ? (
             <span className="sp-verified-text">
-              <svg className="sp-checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="sp-checkmark-enhanced" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Session verified. Entering platform...

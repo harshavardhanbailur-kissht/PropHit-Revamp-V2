@@ -187,12 +187,12 @@ export default function PersonalizePage() {
           aria-modal="true"
           aria-label="Personalized welcome message"
         >
-          {/* Ambient Gold Glow */}
-          <div className="welcome-glow" aria-hidden="true" />
+          {/* Enhanced Ambient Sapphire-Gold Glow */}
+          <div className="welcome-glow-enhanced" aria-hidden="true" />
 
-          {/* Floating Gold Particles */}
+          {/* Floating Gold Particles — More particles for richer effect */}
           <div className="welcome-particles" aria-hidden="true">
-            <span /><span /><span /><span /><span /><span />
+            <span /><span /><span /><span /><span /><span /><span /><span /><span /><span />
           </div>
 
           <div className="welcome-content" onClick={e => e.stopPropagation()}>

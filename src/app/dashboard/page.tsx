@@ -43,7 +43,7 @@ export default function DashboardPage() {
       {/* Welcome Section */}
       <section className="mb-8 page-transition">
         <h1 className="text-hero text-white mb-1 heading-luxury">
-          Welcome, <span className="text-gradient-gold">{state.displayName}</span>
+          Welcome, <span className="text-shimmer-gold">{state.displayName}</span>
         </h1>
         <p className="text-text-secondary">
           Verified assets with credible exit mechanisms
@@ -84,10 +84,11 @@ export default function DashboardPage() {
       {/* Listing Feed — Instagram-style single column */}
       <section className="flex-1">
         <div className="space-y-5 overflow-y-auto hide-scrollbar">
-          {properties.map((property) => (
+          {properties.map((property, index) => (
             <article
               key={property.id}
-              className="listing-card"
+              className="listing-card card-entrance"
+              style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => router.push(`/dashboard/${property.id}`)}
               role="link"
               tabIndex={0}

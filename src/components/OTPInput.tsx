@@ -113,7 +113,7 @@ export function OTPInput({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex gap-3">
+      <div className="flex gap-3 otp-perspective">
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -125,7 +125,7 @@ export function OTPInput({
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
-            className={getBoxClass(index)}
+            className={`${getBoxClass(index)} otp-entrance`}
             aria-label={`Digit ${index + 1} of ${length}`}
           />
         ))}
