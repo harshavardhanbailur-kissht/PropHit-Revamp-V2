@@ -41,14 +41,14 @@ export default function PersonalizePage() {
   }, [state.isVerified, router]);
 
   const handleSkipWelcome = useCallback(() => {
-    setShowWelcome(false);
-    router.push('/dashboard');
+    // Keep overlay visible during navigation to prevent form flash
+    router.replace('/dashboard');
   }, [router]);
 
   // Auto-navigate after welcome animation (4s)
   useEffect(() => {
     if (!showWelcome) return;
-    const timer = setTimeout(handleSkipWelcome, 4000);
+    const timer = setTimeout(handleSkipWelcome, 2500);
     return () => clearTimeout(timer);
   }, [showWelcome, handleSkipWelcome]);
 
@@ -102,7 +102,7 @@ export default function PersonalizePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 safe-top safe-bottom">
       {/* Content Container */}
-      <div className="w-full max-w-sm flex flex-col items-center page-transition">
+      <div className="w-full max-w-sm lg:max-w-md flex flex-col items-center page-transition">
         {/* Back Button */}
         <button
           onClick={handleBack}

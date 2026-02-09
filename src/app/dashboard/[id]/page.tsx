@@ -38,15 +38,15 @@ export default function PropertyDetailPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen lg:flex">
       {/* Hero Image */}
-      <div className="detail-hero">
+      <div className="detail-hero lg:w-1/2 lg:h-screen lg:sticky lg:top-0">
         <Image
           src={property.image}
           alt={property.title}
           fill
           className="object-cover"
-          sizes="100vw"
+          sizes="(max-width: 1024px) 100vw, 50vw"
           priority
         />
         <div className="detail-hero-gradient" />
@@ -67,7 +67,7 @@ export default function PropertyDetailPage() {
       </div>
 
       {/* Content Area */}
-      <div className="detail-content">
+      <div className="detail-content lg:w-1/2">
         {/* Title & Location */}
         <h1 className="text-white text-xl font-medium mb-1 heading-luxury">{property.title}</h1>
         <p className="text-text-muted text-sm mb-5">

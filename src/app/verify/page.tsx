@@ -68,7 +68,7 @@ export default function VerifyPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 safe-top safe-bottom">
       {/* Content Container */}
-      <div className="w-full max-w-sm flex flex-col items-center page-transition">
+      <div className="w-full max-w-sm lg:max-w-md flex flex-col items-center page-transition">
         {/* Back Button */}
         <button
           onClick={handleBack}

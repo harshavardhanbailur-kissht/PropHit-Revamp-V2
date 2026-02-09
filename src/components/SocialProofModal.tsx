@@ -35,7 +35,7 @@ export function SocialProofModal({ onComplete, isReturning }: SocialProofModalPr
   const [footerMsgIndex, setFooterMsgIndex] = useState(0);
   const [shuffleKey, setShuffleKey] = useState(0);
 
-  const duration = isReturning ? 8000 : 10000;
+  const duration = isReturning ? 5000 : 7000;
   const phaseRef = useRef<Phase>(0);
 
   const stableComplete = useCallback(() => {

@@ -15,15 +15,15 @@ const config: Config = {
         'bg-card': '#101e36',
         'bg-elevated': '#162744',
 
-        // Brand Gold (from logo)
-        'gold': '#C9A962',
-        'gold-dark': '#A68A4B',
-        'gold-light': '#D4B872',
+        // Brand Gold (from logo) — brightened for vibrancy
+        'gold': '#D4AF37',
+        'gold-dark': '#B0943F',
+        'gold-light': '#D9BF72',
 
         // Text
         'text-primary': '#ffffff',
         'text-secondary': '#b3b3b3',
-        'text-muted': '#667a94',
+        'text-muted': '#8899aa',
 
         // Semantic
         'success': '#22c55e',
@@ -31,7 +31,7 @@ const config: Config = {
 
         // Borders
         'border-subtle': 'rgba(255, 255, 255, 0.08)',
-        'border-gold': 'rgba(201, 169, 98, 0.3)',
+        'border-gold': 'rgba(212, 175, 55, 0.3)',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -54,8 +54,8 @@ const config: Config = {
         '2xl': '1.25rem',
       },
       boxShadow: {
-        'gold-glow': '0 0 20px rgba(201, 169, 98, 0.15)',
-        'gold-glow-lg': '0 0 40px rgba(201, 169, 98, 0.2)',
+        'gold-glow': '0 0 20px rgba(212, 175, 55, 0.2)',
+        'gold-glow-lg': '0 0 40px rgba(212, 175, 55, 0.25)',
         'card': '0 4px 24px rgba(0, 0, 0, 0.3)',
       },
       animation: {

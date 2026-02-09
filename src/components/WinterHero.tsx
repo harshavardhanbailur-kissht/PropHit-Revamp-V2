@@ -15,7 +15,7 @@ export function WinterHero() {
 
       {/* Animation 2: Snowfall */}
       <div className="winter-snow">
-        {Array.from({ length: 40 }).map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <span key={i} className="snowflake" />
         ))}
       </div>

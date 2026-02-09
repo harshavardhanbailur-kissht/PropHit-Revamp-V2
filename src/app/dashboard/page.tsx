@@ -28,13 +28,13 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 safe-top safe-bottom">
+    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto safe-top safe-bottom">
       {/* Header */}
       <header className="flex items-center justify-between mb-8 page-transition">
         <Logo className="w-32 h-8" variant="dark" />
         <button
           onClick={handleLogout}
-          className="text-text-muted hover:text-text-primary text-sm transition-colors"
+          className="text-text-muted hover:text-text-primary text-sm transition-colors py-2 px-3 min-h-[44px] flex items-center"
         >
           Logout
         </button>
@@ -81,14 +81,14 @@ export default function DashboardPage() {
 
       */}
 
-      {/* Listing Feed — Instagram-style single column */}
+      {/* Listing Feed — Responsive Grid */}
       <section className="flex-1">
-        <div className="space-y-5 overflow-y-auto hide-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {properties.map((property, index) => (
             <article
               key={property.id}
               className="listing-card card-entrance"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              style={{ animationDelay: `${index * 0.08}s` }}
               onClick={() => router.push(`/dashboard/${property.id}`)}
               role="link"
               tabIndex={0}
@@ -106,7 +106,7 @@ export default function DashboardPage() {
                   alt={property.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 560px"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
 
