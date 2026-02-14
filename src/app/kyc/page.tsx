@@ -59,11 +59,14 @@ export default function KycPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
   const [featureKey, setFeatureKey] = useState(0);
+  const [progressKey, setProgressKey] = useState(0);
+  const [carouselPaused, setCarouselPaused] = useState(false);
 
   const charIndexRef = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const featureIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const featurePausedRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; t: number } | null>(null);
 
   const message = `Hey ${userName}, let\u2019s get your KYC done so you stay just as compliant as us`;
 
@@ -131,19 +134,54 @@ export default function KycPage() {
     return () => clearInterval(tick);
   }, [stage, transitionToStage]);
 
-  // Security features carousel
-  useEffect(() => {
-    if (stage !== 'show-options') return;
+  // Security features carousel — 6s auto-rotation
+  const startCarouselInterval = useCallback(() => {
+    if (featureIntervalRef.current) clearInterval(featureIntervalRef.current);
     featureIntervalRef.current = setInterval(() => {
       if (!featurePausedRef.current) {
         setCurrentFeature(prev => (prev + 1) % SECURITY_FEATURES.length);
         setFeatureKey(prev => prev + 1);
+        setProgressKey(prev => prev + 1);
       }
-    }, 5000);
+    }, 6000);
+  }, []);
+
+  useEffect(() => {
+    if (stage !== 'show-options') return;
+    startCarouselInterval();
     return () => {
       if (featureIntervalRef.current) clearInterval(featureIntervalRef.current);
     };
-  }, [stage]);
+  }, [stage, startCarouselInterval]);
+
+  const navigateCarousel = useCallback((direction: 'prev' | 'next') => {
+    setCurrentFeature(prev => {
+      if (direction === 'next') return (prev + 1) % SECURITY_FEATURES.length;
+      return (prev - 1 + SECURITY_FEATURES.length) % SECURITY_FEATURES.length;
+    });
+    setFeatureKey(prev => prev + 1);
+    setProgressKey(prev => prev + 1);
+    startCarouselInterval();
+  }, [startCarouselInterval]);
+
+  const handleCarouselTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartRef.current = { x: e.touches[0].clientX, t: Date.now() };
+    featurePausedRef.current = true;
+    setCarouselPaused(true);
+  }, []);
+
+  const handleCarouselTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartRef.current) {
+      const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+      const dt = Date.now() - touchStartRef.current.t;
+      if (Math.abs(dx) > 50 && dt < 300) {
+        navigateCarousel(dx < 0 ? 'next' : 'prev');
+      }
+      touchStartRef.current = null;
+    }
+    featurePausedRef.current = false;
+    setCarouselPaused(false);
+  }, [navigateCarousel]);
 
   const handleSelectMethod = (method: KycMethod) => {
     if (!method) return;
@@ -281,27 +319,66 @@ export default function KycPage() {
 
               {/* Security Features Carousel */}
               <div
-                className="glass-card rounded-2xl p-5 border border-[var(--border-subtle)]"
-                onMouseEnter={() => { featurePausedRef.current = true; }}
-                onMouseLeave={() => { featurePausedRef.current = false; }}
+                className={`glass-card rounded-2xl p-5 border border-[var(--border-subtle)] ${carouselPaused ? 'carousel-paused' : ''}`}
+                role="region"
+                aria-label="Security features"
+                aria-live="polite"
+                onMouseEnter={() => { featurePausedRef.current = true; setCarouselPaused(true); }}
+                onMouseLeave={() => { featurePausedRef.current = false; setCarouselPaused(false); }}
+                onTouchStart={handleCarouselTouchStart}
+                onTouchEnd={handleCarouselTouchEnd}
               >
-                <div className="flex items-center gap-4 trust-slide-enter" key={featureKey}>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--gold)] to-[var(--gold-dark)] flex items-center justify-center text-[var(--bg-primary)] shrink-0">
-                    <SecurityIcon type={SECURITY_FEATURES[currentFeature].icon} />
+                <div className="flex items-center gap-3">
+                  {/* Prev Button */}
+                  <button
+                    onClick={() => navigateCarousel('prev')}
+                    className="carousel-nav-btn shrink-0 w-8 h-8 rounded-full border border-[var(--border-gold)] text-[var(--text-muted)] flex items-center justify-center"
+                    aria-label="Previous feature"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Slide Content */}
+                  <div className="flex items-center gap-4 flex-1 min-w-0 trust-slide-enter" key={featureKey}>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--gold)] to-[var(--gold-dark)] flex items-center justify-center text-[var(--bg-primary)] shrink-0">
+                      <SecurityIcon type={SECURITY_FEATURES[currentFeature].icon} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-white text-sm font-semibold heading-luxury">{SECURITY_FEATURES[currentFeature].title}</h4>
+                      <p className="text-[var(--text-secondary)] text-[0.8125rem]">{SECURITY_FEATURES[currentFeature].description}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-white text-sm font-semibold heading-luxury">{SECURITY_FEATURES[currentFeature].title}</h4>
-                    <p className="text-[var(--text-secondary)] text-[0.8125rem]">{SECURITY_FEATURES[currentFeature].description}</p>
-                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => navigateCarousel('next')}
+                    className="carousel-nav-btn shrink-0 w-8 h-8 rounded-full border border-[var(--border-gold)] text-[var(--text-muted)] flex items-center justify-center"
+                    aria-label="Next feature"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
-                <div className="flex justify-center gap-2 mt-3">
+
+                {/* Progress Bar */}
+                <div className="carousel-progress-bar mt-3" key={progressKey}>
+                  <div className="carousel-progress-fill" />
+                </div>
+
+                {/* Dot Indicators */}
+                <div className="flex justify-center gap-1 mt-2.5">
                   {SECURITY_FEATURES.map((_, i) => (
                     <button
                       key={i}
-                      onClick={() => { setCurrentFeature(i); setFeatureKey(prev => prev + 1); }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentFeature ? 'w-4 bg-[var(--gold)]' : 'w-1.5 bg-[var(--text-ghost)]'}`}
+                      onClick={() => { setCurrentFeature(i); setFeatureKey(prev => prev + 1); setProgressKey(prev => prev + 1); startCarouselInterval(); }}
+                      className="p-2"
                       aria-label={`Feature ${i + 1}`}
-                    />
+                    >
+                      <span className={`block rounded-full transition-all duration-300 ${i === currentFeature ? 'w-4 h-1.5 bg-[var(--gold)]' : 'w-1.5 h-1.5 bg-[var(--text-ghost)]'}`} />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -310,7 +387,7 @@ export default function KycPage() {
               <div className="flex flex-wrap justify-center gap-5 mt-5">
                 {[
                   { icon: '🔒', text: '256-bit Encryption' },
-                  { icon: '✓', text: 'SEBI Registered' },
+                  { icon: '✓', text: 'Legally Compliant' },
                   { icon: '🏦', text: 'Bank-grade Security' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-1.5 text-[var(--text-muted)] text-sm">
