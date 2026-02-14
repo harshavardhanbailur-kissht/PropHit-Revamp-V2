@@ -54,7 +54,7 @@ export function EarnestSetup({ property, onProcess, onBack }: EarnestSetupProps)
 
       {/* Amount Display */}
       <div className="invest-amount-card">
-        <p className="invest-amount-label">Total Investment</p>
+        <p className="invest-amount-label">Total Amount</p>
         <p className="invest-amount-value">{formatPrice(property.priceMinInr)}</p>
       </div>
 
@@ -140,7 +140,7 @@ export function EarnestSetup({ property, onProcess, onBack }: EarnestSetupProps)
           I agree to the Terms &amp; Conditions. I understand that fractional ownership
           is only retained once the entire payment is completed. Early termination may
           result in forfeiture of the earnest deposit. The UPI mandate will auto-debit
-          the specified amount monthly until the full investment is secured.
+          the specified amount monthly until the full purchase is secured.
         </span>
       </label>
 

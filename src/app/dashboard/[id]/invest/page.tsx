@@ -149,7 +149,7 @@ export default function InvestPage() {
           <div className="text-center py-16 kyc-stage-enter">
             <div className="invest-processing-ring" />
             <p className="text-white text-lg heading-luxury mb-2">
-              Processing your investment
+              Processing your purchase
             </p>
             <p className="text-text-secondary text-sm" role="status" aria-live="polite">
               {PROCESSING_MESSAGES[processingMsg]}
@@ -171,7 +171,7 @@ export default function InvestPage() {
       {/* Disclaimer */}
       {step !== 'success' && step !== 'processing' && (
         <p className="text-text-muted text-xs text-center leading-relaxed opacity-60 mt-6 mb-4">
-          This is a demonstration of the investment flow. No actual transactions will be processed.
+          This is a demonstration of the purchase flow. No actual transactions will be processed.
           PropHit is a prototype for stakeholder review.
         </p>
       )}

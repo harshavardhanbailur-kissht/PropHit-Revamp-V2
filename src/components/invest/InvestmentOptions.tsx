@@ -38,7 +38,7 @@ export function InvestmentOptions({
       <div className="text-center mb-6">
         <p className="label-luxury mb-2">Choose Your Path</p>
         <h2 className="text-white text-xl heading-luxury">
-          How would you like to invest, {displayName}?
+          How would you like to proceed, {displayName}?
         </h2>
       </div>
 
@@ -61,7 +61,7 @@ export function InvestmentOptions({
           <h3>Complete Purchase</h3>
           <p className="invest-option-subtitle">Single UPI Transaction</p>
           <p className="invest-option-desc">
-            Pay the full investment amount via UPI and secure your fractional stake instantly.
+            Pay the full amount via UPI and secure your fractional stake instantly.
           </p>
           <p className="invest-option-price">{formatPrice(property.priceMinInr)}</p>
           <button

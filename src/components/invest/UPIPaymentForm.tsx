@@ -41,7 +41,7 @@ export function UPIPaymentForm({ property, onProcess, onBack }: UPIPaymentFormPr
 
       {/* Amount Display */}
       <div className="invest-amount-card">
-        <p className="invest-amount-label">Investment Amount</p>
+        <p className="invest-amount-label">Purchase Amount</p>
         <p className="invest-amount-value">{formatPrice(property.priceMinInr)}</p>
       </div>
 

@@ -122,7 +122,7 @@ export function InvestmentSuccess({
         <h3>Welcome to the Founders&apos; Circle</h3>
 
         <p className="founders-intro">
-          You&apos;ve joined an ultra-exclusive circle of forward-thinking investors.
+          You&apos;ve joined an ultra-exclusive circle of forward-thinking people.
           As a founding member, you&apos;ll unlock privileges reserved for the few.
         </p>
 
@@ -130,7 +130,7 @@ export function InvestmentSuccess({
           {[
             'Early access to premium listings before public release',
             'Priority allocation on oversubscribed properties',
-            'Dedicated investment concierge',
+            'Dedicated personal concierge',
             'Invitation to members-only property events',
           ].map((benefit, i) => (
             <li key={i} style={{ opacity: 0, animation: `congratsFadeInUp 0.5s ease-out ${1.4 + i * 0.15}s both` }}>
@@ -153,9 +153,23 @@ export function InvestmentSuccess({
         <div className="invest-earnest-notice mb-6 congrats-message">
           <strong className="text-gold">Important:</strong> Your fractional ownership will be
           fully secured upon completion of all scheduled payments. Monthly mandates will
-          auto-debit as per the agreed schedule. View complete terms in your investment dashboard.
+          auto-debit as per the agreed schedule. View complete terms in your dashboard.
         </div>
       )}
+
+      {/* Contract Delivery Notice */}
+      <div className="invest-earnest-notice mb-6 congrats-message" style={{ borderLeftColor: 'var(--gold)' }}>
+        <div className="flex items-start gap-3">
+          <svg className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <div>
+            <p className="text-gold font-medium text-sm mb-1">Written Contract</p>
+            <p>Expect delivery of your written contract within <strong className="text-text-primary">10 business days</strong>. All documents will be available in your dashboard once ready.</p>
+          </div>
+        </div>
+      </div>
 
       {/* Return CTA */}
       <div className="congrats-button">
