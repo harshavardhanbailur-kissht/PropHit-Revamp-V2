@@ -38,7 +38,7 @@ export default function PanPage() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const redirectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const message = `The last step \u2014 and you\u2019re into the exclusive community of extraordinary opportunities`;
+  const message = `The last step and you\u2019re into the exclusive community of extraordinary opportunities`;
 
   // Confetti pieces — all gold tones
   const confettiPieces = useMemo(() =>

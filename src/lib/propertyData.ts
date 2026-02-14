@@ -471,7 +471,7 @@ export const properties: Property[] = [
     siteLat: 28.5848,
     siteLng: 77.3425,
     shortRationale: 'Special category allotment; transfer rules are municipal; slower resale cadence expected.',
-    image: 'https://images.unsplash.com/photo-1464938050520-ef2571e2e89f?w=800',
+    image: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800',
     growthPercent: 19,
     growthPeriodYears: 2,
     growthSource: 'PropHit Research',

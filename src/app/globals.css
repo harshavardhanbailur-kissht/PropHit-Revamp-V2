@@ -3500,6 +3500,259 @@ body {
   }
 }
 
+/* ========================================
+   PROPERTY HISTORY FEATURE
+   ======================================== */
+
+/* Keyframes */
+@keyframes historySpineGrow {
+  0% { height: 0; }
+  100% { height: 100%; }
+}
+
+@keyframes historyNodeReveal {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes historySlideLeft {
+  0% { opacity: 0; transform: translateX(-40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes historySlideRight {
+  0% { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes historyQuoteReveal {
+  0% { opacity: 0; transform: translateY(32px); letter-spacing: 0.08em; }
+  60% { letter-spacing: 0.01em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: -0.005em; }
+}
+
+@keyframes historyScrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+  50% { transform: translateX(-50%) translateY(10px); opacity: 1; }
+}
+
+/* History Hero */
+.history-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 80px;
+}
+
+.history-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 5, 0.15) 0%,
+    rgba(5, 5, 5, 0.25) 25%,
+    rgba(5, 5, 5, 0.6) 65%,
+    var(--bg-primary) 100%
+  );
+  z-index: 1;
+}
+
+/* Timeline Spine (desktop — centered) */
+.history-spine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark), transparent);
+  opacity: 0.25;
+  transition: height 2s var(--ease);
+}
+
+/* Timeline Spine (mobile — left-aligned) */
+.history-spine-mobile {
+  position: absolute;
+  left: 15px;
+  top: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark), transparent);
+  opacity: 0.2;
+  transition: height 2s var(--ease);
+}
+
+/* Safe area bottom padding for sticky bars */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Timeline Node */
+.history-node {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--gold-dark);
+  opacity: 0;
+  transform: scale(0);
+  z-index: 2;
+}
+
+.history-node.is-visible {
+  animation: historyNodeReveal 0.5s var(--ease) forwards;
+}
+
+.history-node.is-visible::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0;
+  animation: goldPulseRing 1.5s ease-out 0.3s;
+}
+
+/* Timeline Card Animations */
+.history-card-left,
+.history-card-right {
+  opacity: 0;
+}
+
+.history-card-left.is-visible {
+  animation: historySlideLeft 0.6s var(--ease) forwards;
+}
+
+.history-card-right.is-visible {
+  animation: historySlideRight 0.6s var(--ease) forwards;
+}
+
+/* Facts Horizontal Scroll */
+.history-facts-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 8px 24px 16px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.history-facts-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.history-fact-card {
+  flex-shrink: 0;
+  width: 280px;
+  scroll-snap-align: start;
+  transition: all var(--duration) var(--ease);
+}
+
+.history-fact-card:hover {
+  border-color: rgba(201, 169, 98, 0.25);
+  box-shadow: 0 0 24px rgba(201, 169, 98, 0.08);
+  transform: translateY(-3px);
+}
+
+/* Pull Quote */
+.history-pull-quote {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--gold);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 680px;
+  margin: 0 auto;
+  opacity: 0;
+}
+
+.history-pull-quote.is-visible {
+  animation: historyQuoteReveal 0.9s var(--ease-precision) forwards;
+}
+
+/* Land Use Bar Segment */
+.history-land-segment {
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: width 0.8s var(--ease), opacity 0.5s ease;
+}
+
+/* Scroll Indicator */
+.history-scroll-indicator {
+  animation: historyScrollBounce 2.5s ease-in-out infinite;
+}
+
+/* Mobile overrides for History */
+@media (max-width: 768px) {
+  .history-spine {
+    left: 27px;
+    transform: none;
+  }
+
+  .history-hero {
+    min-height: 500px;
+    padding-bottom: 60px;
+  }
+
+  .history-card-left.is-visible,
+  .history-card-right.is-visible {
+    animation: fadeInUp 0.6s var(--ease) forwards;
+  }
+
+  .history-fact-card {
+    width: 240px;
+  }
+}
+
+/* Prestige mode overrides */
+:root[data-theme="prestige"] .history-hero-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(2, 2, 2, 0.2) 0%,
+    rgba(2, 2, 2, 0.4) 25%,
+    rgba(2, 2, 2, 0.75) 65%,
+    var(--bg-primary) 100%
+  );
+}
+
+:root[data-theme="prestige"] .history-node {
+  border-color: var(--gold-dark);
+  background: var(--bg-void);
+}
+
+/* Reduced motion for history feature */
+@media (prefers-reduced-motion: reduce) {
+  .history-spine,
+  .history-node,
+  .history-card-left,
+  .history-card-right,
+  .history-pull-quote,
+  .history-scroll-indicator {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .history-land-segment {
+    transition: none !important;
+  }
+
+  .history-hero .animate-ken-burns {
+    animation: none !important;
+  }
+}
+
 /* Touch target enforcement — minimum 44px for all interactive elements */
 @media (pointer: coarse) {
   button,

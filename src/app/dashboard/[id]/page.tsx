@@ -189,6 +189,24 @@ export default function PropertyDetailPage() {
           <p className="text-text-secondary text-sm leading-relaxed">{property.shortRationale}</p>
         </div>
 
+        {/* Property History CTA */}
+        <div className="detail-section">
+          <button
+            onClick={() => router.push(`/dashboard/${property.id}/history`)}
+            className="w-full py-3 px-4 rounded-xl border border-border-gold
+                       bg-transparent text-gold text-sm font-medium
+                       flex items-center justify-center gap-2
+                       transition-all duration-300 ease-luxury
+                       hover:bg-gold/5 hover:border-gold hover:shadow-gold-glow"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            View Property History
+          </button>
+        </div>
+
         {/* Property Details Grid */}
         <div className="detail-section">
           <p className="detail-section-title">Property Details</p>
