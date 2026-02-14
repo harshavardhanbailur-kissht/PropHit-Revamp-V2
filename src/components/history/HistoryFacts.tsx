@@ -33,7 +33,7 @@ export function HistoryFacts({ facts }: HistoryFactsProps) {
   const { ref: sectionRef, isVisible } = useScrollReveal<HTMLDivElement>();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const checkScroll = () => {
     const el = scrollRef.current;
@@ -47,7 +47,11 @@ export function HistoryFacts({ facts }: HistoryFactsProps) {
     if (!el) return;
     checkScroll();
     el.addEventListener('scroll', checkScroll, { passive: true });
-    return () => el.removeEventListener('scroll', checkScroll);
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      el.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
   }, []);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -66,16 +70,48 @@ export function HistoryFacts({ facts }: HistoryFactsProps) {
         <h2 className="font-serif text-hero text-white">Did You Know?</h2>
       </div>
 
-      {/* Scroll container with navigation */}
-      <div className="relative">
-        {/* Left scroll button */}
+      {/* Desktop: responsive grid layout */}
+      <div className="hidden md:block px-6 lg:px-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {facts.map((fact, index) => (
+            <div
+              key={fact.year + fact.title}
+              className="glass-card p-5 transition-all duration-300 hover:border-gold/25 hover:shadow-gold-glow hover:-translate-y-1"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'opacity 0.5s ease, transform 0.5s ease',
+                transitionDelay: isVisible ? `${index * 0.08}s` : '0s',
+              }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className={getCategoryColor(fact.category)}>
+                  {getCategoryIcon(fact.category)}
+                </div>
+                <span className="text-gold text-micro font-semibold px-2 py-0.5 rounded bg-gold/10 border border-gold/15">
+                  {fact.year}
+                </span>
+              </div>
+              <h3 className="text-white text-caption font-medium mb-2 leading-snug">
+                {fact.title}
+              </h3>
+              <p className="text-text-secondary text-micro leading-relaxed">
+                {fact.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile: horizontal scroll */}
+      <div className="md:hidden relative">
         {canScrollLeft && (
           <button
             onClick={() => scroll('left')}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full
                        bg-bg-elevated/90 border border-border-subtle backdrop-blur-sm
-                       flex items-center justify-center text-gold/70 hover:text-gold
-                       transition-all duration-200 hover:border-gold/30 hover:shadow-gold-glow"
+                       flex items-center justify-center text-gold/70
+                       active:text-gold transition-all duration-200"
             aria-label="Scroll left"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,14 +120,13 @@ export function HistoryFacts({ facts }: HistoryFactsProps) {
           </button>
         )}
 
-        {/* Right scroll button */}
         {canScrollRight && (
           <button
             onClick={() => scroll('right')}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full
                        bg-bg-elevated/90 border border-border-subtle backdrop-blur-sm
-                       flex items-center justify-center text-gold/70 hover:text-gold
-                       transition-all duration-200 hover:border-gold/30 hover:shadow-gold-glow"
+                       flex items-center justify-center text-gold/70
+                       active:text-gold transition-all duration-200"
             aria-label="Scroll right"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,34 +135,29 @@ export function HistoryFacts({ facts }: HistoryFactsProps) {
           </button>
         )}
 
-        {/* Scrollable facts */}
         <div ref={scrollRef} className="history-facts-scroll">
           {facts.map((fact, index) => (
             <div
               key={fact.year + fact.title}
-              className={`history-fact-card glass-card p-5 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+              className="history-fact-card glass-card p-5"
               style={{
-                transitionDelay: isVisible ? `${index * 0.1}s` : '0s',
-                transition: 'opacity 0.5s ease, transform 0.5s ease',
+                opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'opacity 0.5s ease, transform 0.5s ease',
+                transitionDelay: isVisible ? `${index * 0.1}s` : '0s',
               }}
             >
-              {/* Icon + Year */}
               <div className="flex items-center gap-3 mb-3">
-                <div className={`${getCategoryColor(fact.category)}`}>
+                <div className={getCategoryColor(fact.category)}>
                   {getCategoryIcon(fact.category)}
                 </div>
                 <span className="text-gold text-micro font-semibold px-2 py-0.5 rounded bg-gold/10 border border-gold/15">
                   {fact.year}
                 </span>
               </div>
-
-              {/* Title */}
               <h3 className="text-white text-caption font-medium mb-2 leading-snug">
                 {fact.title}
               </h3>
-
-              {/* Description */}
               <p className="text-text-secondary text-micro leading-relaxed">
                 {fact.description}
               </p>

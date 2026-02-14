@@ -12,6 +12,7 @@ import {
 } from '@/lib/propertyData';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BuyNowCTA } from '@/components/BuyNowCTA';
 
 // Time-aware greeting
 function getGreeting(): string {
@@ -183,6 +184,15 @@ export default function DashboardPage() {
                   </Badge>
                   <span className="text-text-ghost text-xs">{property.growthPeriodYears}Y &middot; {property.growthSource}</span>
                 </div>
+              </div>
+
+              {/* Invest CTA */}
+              <div className="px-4 pb-4 pt-1">
+                <BuyNowCTA
+                  propertyId={property.id}
+                  propertyTitle={property.title}
+                  variant="card"
+                />
               </div>
             </article>
           ))}

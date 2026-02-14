@@ -12,6 +12,7 @@ import {
   getExitBadgeLabel,
   getRiskColor,
 } from '@/lib/propertyData';
+import { BuyNowCTA } from '@/components/BuyNowCTA';
 
 export default function PropertyDetailPage() {
   const router = useRouter();
@@ -91,6 +92,15 @@ export default function PropertyDetailPage() {
             <span className="text-text-muted font-normal">&middot;</span>
             <span className="text-text-muted font-normal">{property.growthSource}</span>
           </div>
+        </div>
+
+        {/* Primary Invest CTA */}
+        <div className="detail-section">
+          <BuyNowCTA
+            propertyId={property.id}
+            propertyTitle={property.title}
+            variant="primary"
+          />
         </div>
 
         {/* Trust Verification */}
@@ -205,6 +215,47 @@ export default function PropertyDetailPage() {
             </svg>
             View Property History
           </button>
+        </div>
+
+        {/* Immersive Views */}
+        <div className="detail-section">
+          <p className="detail-section-title">Immersive Views</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => router.push(`/dashboard/${property.id}/explore?mode=360`)}
+              className="flex-1 py-3 px-4 rounded-xl border border-border-gold
+                         bg-transparent text-gold text-sm font-medium
+                         flex items-center justify-center gap-2
+                         transition-all duration-300 ease-luxury
+                         hover:bg-gold/5 hover:border-gold hover:shadow-gold-glow"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M3.6 9h16.8M3.6 15h16.8" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M12 3a15.3 15.3 0 014 9 15.3 15.3 0 01-4 9 15.3 15.3 0 01-4-9 15.3 15.3 0 014-9z" />
+              </svg>
+              View 360°
+            </button>
+            <button
+              onClick={() => router.push(`/dashboard/${property.id}/explore?mode=map`)}
+              className="flex-1 py-3 px-4 rounded-xl border border-border-gold
+                         bg-transparent text-gold text-sm font-medium
+                         flex items-center justify-center gap-2
+                         transition-all duration-300 ease-luxury
+                         hover:bg-gold/5 hover:border-gold hover:shadow-gold-glow"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              View on Map
+            </button>
+          </div>
         </div>
 
         {/* Property Details Grid */}

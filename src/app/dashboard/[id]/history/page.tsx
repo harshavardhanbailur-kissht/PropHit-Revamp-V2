@@ -10,6 +10,7 @@ import { HistoryTimeline } from '@/components/history/HistoryTimeline';
 import { HistoryFacts } from '@/components/history/HistoryFacts';
 import { LandUseBar } from '@/components/history/LandUseBar';
 import { AreaHistory } from '@/components/history/AreaHistory';
+import { BuyNowCTA } from '@/components/BuyNowCTA';
 
 export default function PropertyHistoryPage() {
   const router = useRouter();
@@ -82,8 +83,14 @@ export default function PropertyHistoryPage() {
         propertyImage={property.image}
       />
 
-      {/* Desktop Return CTA */}
-      <div className="hidden md:block py-12 px-6 text-center">
+      {/* Desktop Return + Invest CTAs */}
+      <div className="hidden md:flex flex-col items-center gap-4 py-12 px-6">
+        <BuyNowCTA
+          propertyId={params.id as string}
+          propertyTitle={property.title}
+          variant="primary"
+          className="max-w-md"
+        />
         <button
           onClick={handleBack}
           className="inline-flex items-center gap-2 px-8 py-3 rounded-xl
@@ -98,23 +105,31 @@ export default function PropertyHistoryPage() {
         </button>
       </div>
 
-      {/* Mobile sticky bottom bar — thumb zone CTA */}
+      {/* Mobile sticky bottom bar — dual CTAs */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40
                       bg-bg-primary/90 backdrop-blur-xl border-t border-border-subtle
                       px-4 py-3 safe-area-bottom">
-        <button
-          onClick={handleBack}
-          className="w-full py-3 rounded-xl
-                     bg-gold/10 border border-gold/30 text-gold text-sm font-medium
-                     flex items-center justify-center gap-2
-                     transition-all duration-200
-                     active:scale-[0.98] active:bg-gold/15"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Property
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Back — icon only */}
+          <button
+            onClick={handleBack}
+            className="w-12 h-12 rounded-xl bg-titanium-surface border border-white/[0.06]
+                       flex items-center justify-center text-text-secondary
+                       transition-all duration-200 active:scale-95 shrink-0"
+            aria-label="Back to property"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          {/* Invest Now — primary */}
+          <BuyNowCTA
+            propertyId={params.id as string}
+            propertyTitle={property.title}
+            variant="sticky"
+            className="flex-1"
+          />
+        </div>
       </div>
     </div>
   );
