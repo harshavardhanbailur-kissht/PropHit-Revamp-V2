@@ -9,6 +9,11 @@ interface FlowState {
   selectedSkills: string[];
   displayName: string;
   currentStep: number;
+  kycMethod: 'video' | 'aadhaar' | null;
+  kycComplete: boolean;
+  panNumber: string;
+  panMethod: 'manual' | 'ocr' | null;
+  panComplete: boolean;
 }
 
 type FlowAction =
@@ -20,6 +25,11 @@ type FlowAction =
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
   | { type: 'GO_TO_STEP'; step: number }
+  | { type: 'SET_KYC_METHOD'; method: 'video' | 'aadhaar' }
+  | { type: 'COMPLETE_KYC' }
+  | { type: 'SET_PAN_METHOD'; method: 'manual' | 'ocr' }
+  | { type: 'SET_PAN_NUMBER'; pan: string }
+  | { type: 'COMPLETE_PAN' }
   | { type: 'RESET' };
 
 // Initial State
@@ -29,6 +39,11 @@ const initialState: FlowState = {
   selectedSkills: [],
   displayName: '',
   currentStep: 0,
+  kycMethod: null,
+  kycComplete: false,
+  panNumber: '',
+  panMethod: null,
+  panComplete: false,
 };
 
 // Reducer
@@ -64,6 +79,21 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
     case 'GO_TO_STEP':
       return { ...state, currentStep: action.step };
 
+    case 'SET_KYC_METHOD':
+      return { ...state, kycMethod: action.method };
+
+    case 'COMPLETE_KYC':
+      return { ...state, kycComplete: true };
+
+    case 'SET_PAN_METHOD':
+      return { ...state, panMethod: action.method };
+
+    case 'SET_PAN_NUMBER':
+      return { ...state, panNumber: action.pan };
+
+    case 'COMPLETE_PAN':
+      return { ...state, panComplete: true };
+
     case 'RESET':
       return initialState;
 
@@ -83,6 +113,11 @@ interface FlowContextType {
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (step: number) => void;
+  setKycMethod: (method: 'video' | 'aadhaar') => void;
+  completeKyc: () => void;
+  setPanMethod: (method: 'manual' | 'ocr') => void;
+  setPanNumber: (pan: string) => void;
+  completePan: () => void;
   reset: () => void;
 }
 
@@ -102,6 +137,11 @@ export function FlowProvider({ children }: { children: ReactNode }) {
     nextStep: () => dispatch({ type: 'NEXT_STEP' }),
     prevStep: () => dispatch({ type: 'PREV_STEP' }),
     goToStep: (step: number) => dispatch({ type: 'GO_TO_STEP', step }),
+    setKycMethod: (method: 'video' | 'aadhaar') => dispatch({ type: 'SET_KYC_METHOD', method }),
+    completeKyc: () => dispatch({ type: 'COMPLETE_KYC' }),
+    setPanMethod: (method: 'manual' | 'ocr') => dispatch({ type: 'SET_PAN_METHOD', method }),
+    setPanNumber: (pan: string) => dispatch({ type: 'SET_PAN_NUMBER', pan }),
+    completePan: () => dispatch({ type: 'COMPLETE_PAN' }),
     reset: () => dispatch({ type: 'RESET' }),
   };
 

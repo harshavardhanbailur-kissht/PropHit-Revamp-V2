@@ -43,7 +43,7 @@ export default function PersonalizePage() {
 
   const handleSkipWelcome = useCallback(() => {
     // Keep overlay visible during navigation to prevent form flash
-    router.replace('/dashboard');
+    router.replace('/kyc');
   }, [router]);
 
   // Auto-navigate after welcome animation (4s)

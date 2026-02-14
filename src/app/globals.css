@@ -1059,6 +1059,34 @@ body {
     transform: none !important;
   }
 
+  /* KYC & PAN — disable all verification animations */
+  .kyc-typing-dot,
+  .kyc-typing-cursor,
+  .kyc-scan-line,
+  .kyc-corner,
+  .kyc-success-pulse,
+  .kyc-confetti-piece,
+  .kyc-stage-enter,
+  .kyc-stage-exit,
+  .kyc-check-draw,
+  .congrats-checkmark,
+  .congrats-title,
+  .congrats-subtitle,
+  .congrats-message,
+  .congrats-badge,
+  .congrats-button,
+  .congrats-hint,
+  .trust-slide-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .kyc-check-draw {
+    stroke-dashoffset: 0 !important;
+  }
+
   /* Ultra-luxury enhancements — disable new animations */
   .gold-line,
   .welcome-light-sweep,
@@ -1086,6 +1114,197 @@ body {
   .otp-box.success:nth-child(4) {
     animation-delay: 0s !important;
   }
+}
+
+/* ========================================
+   KYC & PAN VERIFICATION ANIMATIONS
+   ======================================== */
+
+/* Typing dots — 3 bouncing gold dots */
+@keyframes typingDotBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.kyc-typing-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: typingDotBounce 1.4s ease-in-out infinite;
+}
+.kyc-typing-dot:nth-child(1) { animation-delay: 0s; }
+.kyc-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.kyc-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Typing cursor — blinking gold line */
+@keyframes kycCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.kyc-typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--gold);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: kycCursorBlink 0.7s ease-in-out infinite;
+}
+
+/* Scan line — horizontal gold gradient sweep */
+@keyframes kycScanLine {
+  0% { top: 0%; }
+  50% { top: 90%; }
+  100% { top: 0%; }
+}
+
+.kyc-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+  box-shadow: 0 0 12px var(--gold-glow-md);
+  animation: kycScanLine 2.5s ease-in-out infinite;
+  z-index: 2;
+}
+
+/* Corner brackets — pulsing gold scan corners */
+@keyframes cornerBracketPulse {
+  0%, 100% { border-color: var(--gold); opacity: 0.6; }
+  50% { border-color: var(--gold-light); opacity: 1; }
+}
+
+.kyc-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  animation: cornerBracketPulse 2s ease-in-out infinite;
+}
+.kyc-corner-tl { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; border-radius: 4px 0 0 0; }
+.kyc-corner-tr { top: 12px; right: 12px; border-top: 2px solid; border-right: 2px solid; border-radius: 0 4px 0 0; }
+.kyc-corner-bl { bottom: 12px; left: 12px; border-bottom: 2px solid; border-left: 2px solid; border-radius: 0 0 0 4px; }
+.kyc-corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; border-radius: 0 0 4px 0; }
+
+/* Progress bar fill — gold gradient with glow */
+.kyc-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px var(--gold-glow-md);
+}
+
+/* Checkmark draw — SVG stroke animation */
+@keyframes kycCheckDraw {
+  0% { stroke-dashoffset: 24; opacity: 0; }
+  30% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.kyc-check-draw {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: kycCheckDraw 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+/* Success pulse — expanding gold ring */
+@keyframes kycSuccessPulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 169, 98, 0.4); }
+  70% { box-shadow: 0 0 0 16px rgba(201, 169, 98, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 169, 98, 0); }
+}
+
+.kyc-success-pulse {
+  animation: kycSuccessPulse 1.5s ease-out infinite;
+}
+
+/* Stage transitions */
+@keyframes kycStageEnter {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kycStageExit {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-12px); }
+}
+
+.kyc-stage-enter {
+  animation: kycStageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.kyc-stage-exit {
+  animation: kycStageExit 0.3s ease-in both;
+}
+
+/* Confetti fall — for PAN congratulations */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  25% { opacity: 1; }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.kyc-confetti-piece {
+  position: absolute;
+  animation: confettiFall var(--confetti-duration, 4s) cubic-bezier(0.2, 0.8, 0.4, 1) var(--confetti-delay, 0s) forwards;
+}
+
+/* Congratulations cascade — staggered entrance */
+@keyframes congratsScaleIn {
+  0% { opacity: 0; transform: scale(0.5); filter: blur(8px); }
+  60% { filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes congratsFadeInUp {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgeGlowIn {
+  0% { opacity: 0; transform: scale(0.8); box-shadow: 0 0 0 rgba(201, 169, 98, 0); }
+  100% { opacity: 1; transform: scale(1); box-shadow: 0 0 24px rgba(201, 169, 98, 0.2); }
+}
+
+.congrats-checkmark { animation: congratsScaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.congrats-title { animation: congratsFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; opacity: 0; }
+.congrats-subtitle { animation: congratsFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both; opacity: 0; }
+.congrats-message { animation: congratsFadeInUp 0.5s ease-out 0.9s both; opacity: 0; }
+.congrats-badge { animation: badgeGlowIn 0.6s ease-out 1.1s both; opacity: 0; }
+.congrats-button { animation: congratsFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.3s both; opacity: 0; }
+.congrats-hint { animation: congratsFadeInUp 0.5s ease-out 1.5s both; opacity: 0; }
+
+/* PAN validation segments */
+.pan-segment-valid {
+  background: rgba(201, 169, 98, 0.08);
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.pan-segment-pending {
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+}
+
+/* Trust carousel — slide transition */
+@keyframes trustSlideIn {
+  0% { opacity: 0; transform: translateX(12px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.trust-slide-enter {
+  animation: trustSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ========================================

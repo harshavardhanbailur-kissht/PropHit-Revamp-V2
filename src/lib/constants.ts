@@ -48,7 +48,8 @@ export const SKILLS = [
 export const STEPS = [
   { id: 'phone', label: 'Phone' },
   { id: 'verify', label: 'Verify' },
-  { id: 'skills', label: 'Skills' },
   { id: 'personalize', label: 'Name' },
+  { id: 'kyc', label: 'KYC' },
+  { id: 'pan', label: 'PAN' },
   { id: 'dashboard', label: 'Home' },
 ] as const;
