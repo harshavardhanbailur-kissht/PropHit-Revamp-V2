@@ -110,7 +110,7 @@ export default function InvestPage() {
       {/* Page Label */}
       {step !== 'success' && step !== 'processing' && (
         <div className="text-center pt-8 mb-6 page-transition">
-          <p className="label-luxury mb-1">Investment</p>
+          <p className="label-luxury mb-1">Purchase</p>
         </div>
       )}
 

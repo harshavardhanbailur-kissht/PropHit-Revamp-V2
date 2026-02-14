@@ -23,9 +23,9 @@ export function BuyNowCTA({ propertyId, propertyTitle, variant, className = '' }
       <button
         onClick={handleClick}
         className={`buy-now-card ${className}`}
-        aria-label={`Invest in ${propertyTitle}`}
+        aria-label={`Buy ${propertyTitle}`}
       >
-        <span>Invest Now</span>
+        <span>Buy Now</span>
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
@@ -38,14 +38,14 @@ export function BuyNowCTA({ propertyId, propertyTitle, variant, className = '' }
       <button
         onClick={handleClick}
         className={`btn-primary flex flex-col items-center gap-1 ${className}`}
-        aria-label={`Invest in ${propertyTitle}`}
+        aria-label={`Buy ${propertyTitle}`}
       >
         <span className="flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Invest Now
+          Buy Now
         </span>
         <span className="text-[0.6875rem] font-normal opacity-70 tracking-wider">
           Secure your fractional stake
@@ -59,13 +59,13 @@ export function BuyNowCTA({ propertyId, propertyTitle, variant, className = '' }
       <button
         onClick={handleClick}
         className={`buy-now-sticky ${className}`}
-        aria-label={`Invest in ${propertyTitle}`}
+        aria-label={`Buy ${propertyTitle}`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        Invest Now
+        Buy Now
       </button>
     );
   }
@@ -75,13 +75,13 @@ export function BuyNowCTA({ propertyId, propertyTitle, variant, className = '' }
     <button
       onClick={handleClick}
       className={`buy-now-floating ${className}`}
-      aria-label={`Invest in ${propertyTitle}`}
+      aria-label={`Buy ${propertyTitle}`}
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      Invest
+      Buy Now
     </button>
   );
 }

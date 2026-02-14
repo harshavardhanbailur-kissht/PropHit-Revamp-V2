@@ -64,7 +64,7 @@ export default function ExplorePage() {
         initialMode={initialMode as '360' | 'map'}
       />
 
-      {/* Floating Invest CTA */}
+      {/* Floating Buy Now CTA */}
       <BuyNowCTA
         propertyId={params.id as string}
         propertyTitle={property.title}

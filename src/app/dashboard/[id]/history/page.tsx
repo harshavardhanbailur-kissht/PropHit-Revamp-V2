@@ -83,7 +83,7 @@ export default function PropertyHistoryPage() {
         propertyImage={property.image}
       />
 
-      {/* Desktop Return + Invest CTAs */}
+      {/* Desktop Return + Buy Now CTAs */}
       <div className="hidden md:flex flex-col items-center gap-4 py-12 px-6">
         <BuyNowCTA
           propertyId={params.id as string}
@@ -122,7 +122,7 @@ export default function PropertyHistoryPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          {/* Invest Now — primary */}
+          {/* Buy Now — primary */}
           <BuyNowCTA
             propertyId={params.id as string}
             propertyTitle={property.title}

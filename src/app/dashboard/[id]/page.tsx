@@ -94,7 +94,7 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        {/* Primary Invest CTA */}
+        {/* Primary Buy Now CTA */}
         <div className="detail-section">
           <BuyNowCTA
             propertyId={property.id}
